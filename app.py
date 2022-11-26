@@ -30,17 +30,17 @@ bmab = '#004890'
 user_pwd = {"BMA": "25"}
 user_names = {"BMA": "BMA"}
 
-# Convert Peak Downs co-ordinates to WGS84
-def convert(x, y):
-    inproj = 20255
-    outproj = 4326
+# # Convert Peak Downs co-ordinates to WGS84
+# def convert(x, y):
+#     inproj = 20255
+#     outproj = 4326
     
-    #create transformation
-    proj = pyproj.Transformer.from_crs(inproj, outproj, always_xy=True)
+#     #create transformation
+#     proj = pyproj.Transformer.from_crs(inproj, outproj, always_xy=True)
     
-    # calculate new location
-    x2,y2 = proj.transform(x, y)
-    return x2, y2
+#     # calculate new location
+#     x2,y2 = proj.transform(x, y)
+#     return x2, y2
 
 def shapefiles(shapefile, label, color):
     # open a zipped shapefile with the zip:// pseudo-protocol
