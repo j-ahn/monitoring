@@ -6,6 +6,7 @@ Created on Sat Nov 26 12:56:22 2022
 """
 
 import numpy as np
+
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
@@ -15,11 +16,13 @@ import plotly.io as pio
 pio.renderers.default='browser'
 
 import flask
+from users import users_info
+user_pwd, user_names = users_info()
 _app_route = '/'
     
 import pandas as pd
-#import pyproj
-#import geopandas as gpd
+import pyproj
+import geopandas as gpd
 import shapely.geometry
 
 # BNMA Colors
@@ -27,20 +30,17 @@ bmao = '#f7923a'
 bmar = '#ee3b34'
 bmab = '#004890'
 
-user_pwd = {"BMA": "25"}
-user_names = {"BMA": "BMA"}
-
-# # Convert Peak Downs co-ordinates to WGS84
-# def convert(x, y):
-#     inproj = 20255
-#     outproj = 4326
+# Convert Peak Downs co-ordinates to WGS84
+def convert(x, y):
+    inproj = 20255
+    outproj = 4326
     
-#     #create transformation
-#     proj = pyproj.Transformer.from_crs(inproj, outproj, always_xy=True)
+    #create transformation
+    proj = pyproj.Transformer.from_crs(inproj, outproj, always_xy=True)
     
-#     # calculate new location
-#     x2,y2 = proj.transform(x, y)
-#     return x2, y2
+    # calculate new location
+    x2,y2 = proj.transform(x, y)
+    return x2, y2
 
 def shapefiles(shapefile, label, color):
     # open a zipped shapefile with the zip:// pseudo-protocol
@@ -101,59 +101,59 @@ def PlotlyFigures():
     # # Data processing
     # # ________________________________________________________________________________________________________________________________________________________________
 
-    # nums = ['00', '01', '02', '03', '04', '05', '06', '07', '09', '10', '11', '12', '13', '14']
+    nums = ['00', '01', '02', '03', '04', '05', '06', '07', '09', '10', '11', '12', '13', '14']
     
-    # # GNSS Data
-    # for num in nums:
-    #     site = 'SITE_' + num
-    #     url = "http://gnssmonitoring.com.au/unitzero/peakdowns/processed_data/PD_UNITZERO_{0}/Download_12HRLY.csv".format(num)
+    # GNSS Data
+    for num in nums:
+        site = 'SITE_' + num
+        url = "http://gnssmonitoring.com.au/unitzero/peakdowns/processed_data/PD_UNITZERO_{0}/Download_12HRLY.csv".format(num)
         
-    #     # read csv as dataframe
-    #     df_temp = pd.read_csv(url, skipinitialspace=True)
-    #     df_temp['ET'] = pd.to_datetime(df_temp['ET'], dayfirst=True)
-    #     trace = go.Scatter(x=df_temp['ET'], y=df_temp['AVG_7DAY_3D_VELOCITY'],
-    #                        name=site, mode='lines', yaxis='y1')
-    #     figure2.add_trace(trace)
+        # read csv as dataframe
+        df_temp = pd.read_csv(url, skipinitialspace=True)
+        df_temp['ET'] = pd.to_datetime(df_temp['ET'], dayfirst=True)
+        trace = go.Scatter(x=df_temp['ET'], y=df_temp['AVG_7DAY_3D_VELOCITY'],
+                            name=site, mode='lines', yaxis='y1')
+        figure2.add_trace(trace)
 
-    #     # Pull out most recent data points
-    #     x, y, v = df_temp.iloc[-1,1], df_temp.iloc[-1,2], df_temp.iloc[-1,16]
-    #     long, lat = convert(x,y)
+        # Pull out most recent data points
+        x, y, v = df_temp.iloc[-1,1], df_temp.iloc[-1,2], df_temp.iloc[-1,16]
+        long, lat = convert(x,y)
         
-    #     SITES.append(site)
-    #     LONGS.append(long)
-    #     LATS.append(lat)
-    #     VS.append(round(v,3))
+        SITES.append(site)
+        LONGS.append(long)
+        LATS.append(lat)
+        VS.append(round(v,3))
         
-    #     TARP = 'rgb(0, 255, 0)'
-    #     for i, c in zip([1, 5, 10],['rgb(255, 165, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 255)']):
-    #         if v > i:
-    #             TARP = c
-    #     TARPS.append(TARP)
-    #     trace1 = go.Scattermapbox(lat=[lat], lon=[long], name=site, text="{0:.3f} mm/s".format(v), mode='markers', marker=go.scattermapbox.Marker(size=20, color=TARP))
-    #     figure1.add_trace(trace1)
+        TARP = 'rgb(0, 255, 0)'
+        for i, c in zip([1, 5, 10],['rgb(255, 165, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 255)']):
+            if v > i:
+                TARP = c
+        TARPS.append(TARP)
+        trace1 = go.Scattermapbox(lat=[lat], lon=[long], name=site, text="{0:.3f} mm/s".format(v), mode='markers', marker=go.scattermapbox.Marker(size=20, color=TARP))
+        figure1.add_trace(trace1)
     
-    # # BLAST MONITORING
-    # df_blast = pd.read_csv('https://raw.githubusercontent.com/j-ahn/monitoring/main/BlastVibrations.csv')
-    # df_blast['Date'] = pd.to_datetime(df_blast['Date'], dayfirst=True)
-    # for ew, c in zip(['1N Endwall', '1S Endwall'],['Blue', 'Red']):
-    #     trace2 = go.Scatter(x=df_blast['Date'], y=df_blast[ew],
-    #                         text=df_blast['Blast ID'], 
-    #                         hovertemplate = "<br>".join([
-    #                             "Date: %{x}",
-    #                             "Blast: %{text}",
-    #                             "PPV: %{y} mm/s"]),
-    #                         name=ew, mode='markers', yaxis='y2', marker_color = c)
-    #     figure2.add_trace(trace2)
+    # BLAST MONITORING
+    df_blast = pd.read_csv('https://raw.githubusercontent.com/j-ahn/monitoring/main/BlastVibrations.csv')
+    df_blast['Date'] = pd.to_datetime(df_blast['Date'], dayfirst=True)
+    for ew, c in zip(['1N Endwall', '1S Endwall'],['Blue', 'Red']):
+        trace2 = go.Scatter(x=df_blast['Date'], y=df_blast[ew],
+                            text=df_blast['Blast ID'], 
+                            hovertemplate = "<br>".join([
+                                "Date: %{x}",
+                                "Blast: %{text}",
+                                "PPV: %{y} mm/s"]),
+                            name=ew, mode='markers', yaxis='y2', marker_color = c)
+        figure2.add_trace(trace2)
 
-    # traceshp1 = shapefiles('https://github.com/j-ahn/monitoring/blob/eabb940a140e7a94aec373e0ddfc9a652bc37988/CONTOURS.zip?raw=true', 'Topographic Contours', 'rgb(200, 200, 200)')
-    # traceshp2 = shapefiles('https://github.com/j-ahn/monitoring/blob/main/FAULTS.zip?raw=true', '1S EW Faults', 'rgb(255, 0, 0)')
-    # figure1.add_trace(traceshp1)
-    # figure1.add_trace(traceshp2)
+    traceshp1 = shapefiles('https://github.com/j-ahn/monitoring/blob/eabb940a140e7a94aec373e0ddfc9a652bc37988/CONTOURS.zip?raw=true', 'Topographic Contours', 'rgb(200, 200, 200)')
+    traceshp2 = shapefiles('https://github.com/j-ahn/monitoring/blob/main/FAULTS.zip?raw=true', '1S EW Faults', 'rgb(255, 0, 0)')
+    figure1.add_trace(traceshp1)
+    figure1.add_trace(traceshp2)
     
-    # figure1.update_mapboxes(center = {'lat' : np.mean(LATS), 'lon' : np.mean(LONGS)})
+    figure1.update_mapboxes(center = {'lat' : np.mean(LATS), 'lon' : np.mean(LONGS)})
     
-    # figure1.update_layout(legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01))
-    # figure2.update_layout(legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01))
+    figure1.update_layout(legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01))
+    figure2.update_layout(legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01))
     
     return figure1, figure2
         
