@@ -6,7 +6,6 @@ Created on Sat Nov 26 12:56:22 2022
 """
 
 import numpy as np
-
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
@@ -16,8 +15,6 @@ import plotly.io as pio
 pio.renderers.default='browser'
 
 import flask
-from users import users_info
-user_pwd, user_names = users_info()
 _app_route = '/'
     
 import pandas as pd
@@ -29,6 +26,9 @@ import shapely.geometry
 bmao = '#f7923a'
 bmar = '#ee3b34'
 bmab = '#004890'
+
+user_pwd = {"BMA": "25"}
+user_names = {"BMA": "BMA"}
 
 # Convert Peak Downs co-ordinates to WGS84
 def convert(x, y):
