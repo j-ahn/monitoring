@@ -34,7 +34,7 @@ bmab = '#004890'
 def convert(x, y):
     mycrs = open(r"PDMG.prj", "r").read()
     
-    inproj = pyproj.crs.CRS(mycrs)
+    inproj = 20255
     outproj = 4326
     
     #create transformation
