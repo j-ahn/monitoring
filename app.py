@@ -18,8 +18,8 @@ import flask
 _app_route = '/'
     
 import pandas as pd
-import pyproj
-import geopandas as gpd
+#import pyproj
+#import geopandas as gpd
 import shapely.geometry
 
 # BNMA Colors
