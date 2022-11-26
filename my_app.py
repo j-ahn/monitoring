@@ -22,8 +22,6 @@ _app_route = '/'
     
 import pandas as pd
 import pyproj
-import glob
-from pathlib import Path
 import geopandas as gpd
 import shapely.geometry
 
@@ -104,20 +102,16 @@ def PlotlyFigures():
     # ________________________________________________________________________________________________________________________________________________________________
     # Data processing
     # ________________________________________________________________________________________________________________________________________________________________
-    
-    # # csv path
-    # path = r'C:\Users\AHNJIW\OneDrive - BHP\Desktop\Coding\Python\PDMCorridorMonitoring\GNSS' # use your path
-    # all_files = glob.glob(path + '\\*.csv')
 
-    urls = ['00', '01', '02', '03', '04', '05', '06', '07', '09', '10', '11', '12', '13', '14']
-    all_files = ["http://gnssmonitoring.com.au/unitzero/peakdowns/processed_data/PD_UNITZERO_{0}/Download_12HRLY.csv".format(i) for i in urls]
+    nums = ['00', '01', '02', '03', '04', '05', '06', '07', '09', '10', '11', '12', '13', '14']
     
     # GNSS Data
-    for file in all_files:
-        site = Path(file).stem  #GNSS name from filename
+    for num in nums:
+        site = 'SITE_' + num
+        url = "http://gnssmonitoring.com.au/unitzero/peakdowns/processed_data/PD_UNITZERO_{0}/Download_12HRLY.csv".format(num)
         
         # read csv as dataframe
-        df_temp = pd.read_csv(file, skipinitialspace=True)
+        df_temp = pd.read_csv(url, skipinitialspace=True)
         df_temp['ET'] = pd.to_datetime(df_temp['ET'], dayfirst=True)
         trace = go.Scatter(x=df_temp['ET'], y=df_temp['AVG_7DAY_3D_VELOCITY'],
                            name=site, mode='lines', yaxis='y1')
