@@ -32,8 +32,6 @@ bmab = '#004890'
 
 # Convert Peak Downs co-ordinates to WGS84
 def convert(x, y):
-    mycrs = open(r"PDMG.prj", "r").read()
-    
     inproj = 20255
     outproj = 4326
     
