@@ -107,6 +107,7 @@ def PlotlyFigures():
     for num in nums:
         site = 'SITE_' + num
         url = "http://gnssmonitoring.com.au/unitzero/peakdowns/processed_data/PD_UNITZERO_{0}/Download_12HRLY.csv".format(num)
+        #url = r"C:\Users\AHNJIW\OneDrive - BHP\Desktop\Coding\Python\PDMCorridorMonitoring\GNSS\Site {0}.csv".format(num)
         
         # read csv as dataframe
         df_temp = pd.read_csv(url, skipinitialspace=True)
@@ -118,6 +119,14 @@ def PlotlyFigures():
         # Pull out most recent data points
         x, y, v = df_temp.iloc[-1,1], df_temp.iloc[-1,2], df_temp.iloc[-1,16]
         long, lat = convert(x,y)
+        # Pull out co-ordinates from 7 days ago
+        x0, y0 = df_temp.iloc[-7,1], df_temp.iloc[-7,2]
+        # Calculate direction vector
+        dx, dy = x - x0, y - y0
+        scalefac = 100000
+        vx, vy = x + dx*scalefac, y + dy*scalefac
+        long0, lat0 = convert(vx, vy)
+        print(long, long0, lat, lat0)
         
         SITES.append(site)
         LONGS.append(long)
@@ -129,9 +138,11 @@ def PlotlyFigures():
             if v > i:
                 TARP = c
         TARPS.append(TARP)
-        trace1 = go.Scattermapbox(lat=[lat], lon=[long], name=site, text="{0:.3f} mm/s".format(v), mode='markers', marker=go.scattermapbox.Marker(size=20, color=TARP))
+        trace1 = go.Scattermapbox(lat=[lat0], lon=[long0], name=site, text="{0:.3f} mm/s".format(v), mode='markers', marker=go.scattermapbox.Marker(size=20, color=TARP))
         figure1.add_trace(trace1)
-    
+        trace11 = go.Scattermapbox(lat=[lat0, lat], lon=[long0, long], showlegend=False, hoverinfo='skip', mode='lines', line=go.scattermapbox.Line(width=5, color=TARP))
+        figure1.add_trace(trace11)
+        
     # BLAST MONITORING
     df_blast = pd.read_csv('https://raw.githubusercontent.com/j-ahn/monitoring/main/BlastVibrations.csv')
     df_blast['Date'] = pd.to_datetime(df_blast['Date'], dayfirst=True)
