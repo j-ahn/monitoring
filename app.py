@@ -106,8 +106,8 @@ def PlotlyFigures():
     # GNSS Data
     for num in nums:
         site = 'SITE_' + num
-        #url = "http://gnssmonitoring.com.au/unitzero/peakdowns/processed_data/PD_UNITZERO_{0}/Download_12HRLY.csv".format(num)
-        url = r"C:\Users\AHNJIW\OneDrive - BHP\Desktop\Coding\Python\PDMCorridorMonitoring\GNSS\Site {0}.csv".format(num)
+        url = "http://gnssmonitoring.com.au/unitzero/peakdowns/processed_data/PD_UNITZERO_{0}/Download_12HRLY.csv".format(num)
+        #url = r"C:\Users\AHNJIW\OneDrive - BHP\Desktop\Coding\Python\PDMCorridorMonitoring\GNSS\Site {0}.csv".format(num)
         
         # read csv as dataframe
         df_temp = pd.read_csv(url, skipinitialspace=True)
